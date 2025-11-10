@@ -61,14 +61,17 @@
                     <button class="mode-btn stats-btn" onclick="showStatsMode()">
                         📊 Ver Estadísticas
                     </button>
+                    <button class="mode-btn" onclick="startGame('spanish')">
+                        🇪🇸 Español → Todas las formas
+                    </button>
                     <button class="mode-btn" onclick="startGame('infinitive')">
-                        📝 Infinitivo → Pasado + Participio
+                        📝 Infinitivo → Pasado + Participio + Español
                     </button>
                     <button class="mode-btn" onclick="startGame('past')">
-                        ⏮️ Pasado → Infinitivo + Participio
+                        ⏮️ Pasado → Infinitivo + Participio + Español
                     </button>
                     <button class="mode-btn" onclick="startGame('participle')">
-                        ✨ Participio → Infinitivo + Pasado
+                        ✨ Participio → Infinitivo + Pasado + Español
                     </button>
                     <button class="mode-btn" onclick="startGame('random')">
                         🎲 Modo Aleatorio
@@ -137,6 +140,10 @@
                         <div class="input-group" id="input2-group">
                             <label id="label2"></label>
                             <input type="text" id="input2" autocomplete="off" readonly>
+                        </div>
+                        <div class="input-group" id="input3-group">
+                            <label id="label3"></label>
+                            <input type="text" id="input3" autocomplete="off" readonly>
                         </div>
                     </div>
 

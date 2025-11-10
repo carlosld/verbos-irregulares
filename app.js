@@ -190,8 +190,10 @@ const promptText = document.getElementById('prompt-text');
 const givenVerb = document.getElementById('given-verb');
 const input1 = document.getElementById('input1');
 const input2 = document.getElementById('input2');
+const input3 = document.getElementById('input3');
 const label1 = document.getElementById('label1');
 const label2 = document.getElementById('label2');
+const label3 = document.getElementById('label3');
 const feedback = document.getElementById('feedback');
 const checkBtn = document.getElementById('check-btn');
 const nextBtn = document.getElementById('next-btn');
@@ -207,12 +209,14 @@ let activeInput = null;
 // Event listeners para cambiar el input activo
 input1.addEventListener('click', () => setActiveInput(input1));
 input2.addEventListener('click', () => setActiveInput(input2));
+input3.addEventListener('click', () => setActiveInput(input3));
 
 // Establecer input activo
 function setActiveInput(input) {
     activeInput = input;
     input1.classList.remove('active');
     input2.classList.remove('active');
+    input3.classList.remove('active');
     input.classList.add('active');
 }
 
@@ -223,9 +227,10 @@ function generateKeyboard() {
     // Obtener todas las letras únicas necesarias para las respuestas
     const correct1 = input1.dataset.correct.toLowerCase();
     const correct2 = input2.dataset.correct.toLowerCase();
+    const correct3 = input3.dataset.correct.toLowerCase();
     
-    // Extraer letras únicas (ignorando espacios y caracteres especiales)
-    const allText = (correct1 + correct2).replace(/[^a-z]/g, '');
+    // Extraer letras únicas (ignorando espacios y caracteres especiales, pero incluyendo acentos)
+    const allText = (correct1 + correct2 + correct3).replace(/[^a-záéíóúñü]/g, '');
     const uniqueLetters = [...new Set(allText.split(''))].sort();
     
     // Añadir algunas letras extra aleatorias para dificultar un poco
@@ -244,7 +249,7 @@ function generateKeyboard() {
     });
     
     // Añadir botón para slash (para variantes como was/were)
-    if (correct1.includes('/') || correct2.includes('/')) {
+    if (correct1.includes('/') || correct2.includes('/') || correct3.includes('/')) {
         const slashBtn = document.createElement('button');
         slashBtn.className = 'key-btn';
         slashBtn.textContent = '/';
@@ -412,7 +417,7 @@ function nextVerb() {
     // Determinar qué forma mostrar según el modo
     let displayMode = currentMode;
     if (currentMode === 'random') {
-        const modes = ['infinitive', 'past', 'participle'];
+        const modes = ['spanish', 'infinitive', 'past', 'participle'];
         displayMode = modes[Math.floor(Math.random() * modes.length)];
     }
     
@@ -421,8 +426,10 @@ function nextVerb() {
     // Resetear inputs y feedback
     input1.value = '';
     input2.value = '';
+    input3.value = '';
     input1.classList.remove('correct', 'incorrect', 'active');
     input2.classList.remove('correct', 'incorrect', 'active');
+    input3.classList.remove('correct', 'incorrect', 'active');
     feedback.textContent = '';
     feedback.className = 'feedback';
     
@@ -439,27 +446,42 @@ function nextVerb() {
 
 // Configurar la pregunta según el modo
 function setupQuestion(mode) {
-    if (mode === 'infinitive') {
-        promptText.textContent = `Escribe el pasado y participio de:`;
+    if (mode === 'spanish') {
+        promptText.textContent = `Escribe todas las formas en inglés de:`;
+        givenVerb.textContent = currentVerb.spanish;
+        label1.textContent = `Infinitivo (Infinitive):`;
+        label2.textContent = `Pasado simple (Past Simple):`;
+        label3.textContent = `Participio (Past Participle):`;
+        input1.dataset.correct = currentVerb.infinitive;
+        input2.dataset.correct = currentVerb.past;
+        input3.dataset.correct = currentVerb.participle;
+    } else if (mode === 'infinitive') {
+        promptText.textContent = `Escribe el pasado, participio y español de:`;
         givenVerb.textContent = currentVerb.infinitive;
         label1.textContent = `Pasado simple (Past Simple):`;
         label2.textContent = `Participio (Past Participle):`;
+        label3.textContent = `Español:`;
         input1.dataset.correct = currentVerb.past;
         input2.dataset.correct = currentVerb.participle;
+        input3.dataset.correct = currentVerb.spanish;
     } else if (mode === 'past') {
-        promptText.textContent = `Escribe el infinitivo y participio de:`;
+        promptText.textContent = `Escribe el infinitivo, participio y español de:`;
         givenVerb.textContent = currentVerb.past;
         label1.textContent = `Infinitivo (Infinitive):`;
         label2.textContent = `Participio (Past Participle):`;
+        label3.textContent = `Español:`;
         input1.dataset.correct = currentVerb.infinitive;
         input2.dataset.correct = currentVerb.participle;
+        input3.dataset.correct = currentVerb.spanish;
     } else if (mode === 'participle') {
-        promptText.textContent = `Escribe el infinitivo y pasado de:`;
+        promptText.textContent = `Escribe el infinitivo, pasado y español de:`;
         givenVerb.textContent = currentVerb.participle;
         label1.textContent = `Infinitivo (Infinitive):`;
         label2.textContent = `Pasado simple (Past Simple):`;
+        label3.textContent = `Español:`;
         input1.dataset.correct = currentVerb.infinitive;
         input2.dataset.correct = currentVerb.past;
+        input3.dataset.correct = currentVerb.spanish;
     }
 }
 
@@ -467,17 +489,20 @@ function setupQuestion(mode) {
 function checkAnswer() {
     const answer1 = input1.value;
     const answer2 = input2.value;
+    const answer3 = input3.value;
     const correct1 = input1.dataset.correct;
     const correct2 = input2.dataset.correct;
+    const correct3 = input3.dataset.correct;
     
-    if (!answer1 || !answer2) {
-        feedback.textContent = '⚠️ Por favor, completa ambos campos';
+    if (!answer1 || !answer2 || !answer3) {
+        feedback.textContent = '⚠️ Por favor, completa todos los campos';
         feedback.className = 'feedback show-answer';
         return;
     }
     
     const isCorrect1 = isAnswerCorrect(answer1, correct1);
     const isCorrect2 = isAnswerCorrect(answer2, correct2);
+    const isCorrect3 = isAnswerCorrect(answer3, correct3);
     
     if (isCorrect1) {
         input1.classList.add('correct');
@@ -495,27 +520,33 @@ function checkAnswer() {
         input2.classList.remove('correct');
     }
     
-    const isFullyCorrect = isCorrect1 && isCorrect2;
+    if (isCorrect3) {
+        input3.classList.add('correct');
+        input3.classList.remove('incorrect');
+    } else {
+        input3.classList.add('incorrect');
+        input3.classList.remove('correct');
+    }
+    
+    const isFullyCorrect = isCorrect1 && isCorrect2 && isCorrect3;
     
     // Registrar el intento
     recordAttempt(currentVerb.infinitive, isFullyCorrect);
     
     if (isFullyCorrect) {
-        feedback.textContent = `¡Excelente! 🎉 (${currentVerb.spanish})`;
+        feedback.textContent = `¡Excelente! 🎉 Todas correctas`;
         feedback.className = 'feedback correct';
         correctCount++;
         streakCount++;
         maxStreak = Math.max(maxStreak, streakCount);
     } else {
         let message = '❌ ';
-        if (!isCorrect1 && !isCorrect2) {
-            message += `Respuestas incorrectas. Correcto: ${correct1} / ${correct2}`;
-        } else if (!isCorrect1) {
-            message += `Primera respuesta incorrecta. Correcto: ${correct1}`;
-        } else {
-            message += `Segunda respuesta incorrecta. Correcto: ${correct2}`;
-        }
-        message += ` (${currentVerb.spanish})`;
+        const incorrectFields = [];
+        if (!isCorrect1) incorrectFields.push(`1: ${correct1}`);
+        if (!isCorrect2) incorrectFields.push(`2: ${correct2}`);
+        if (!isCorrect3) incorrectFields.push(`3: ${correct3}`);
+        
+        message += `Incorrecto${incorrectFields.length > 1 ? 's' : ''}: ${incorrectFields.join(', ')}`;
         feedback.textContent = message;
         feedback.className = 'feedback incorrect';
         incorrectCount++;
@@ -532,11 +563,13 @@ function checkAnswer() {
 function showAnswer() {
     const correct1 = input1.dataset.correct;
     const correct2 = input2.dataset.correct;
+    const correct3 = input3.dataset.correct;
     
     input1.value = correct1;
     input2.value = correct2;
+    input3.value = correct3;
     
-    feedback.textContent = `💡 Respuesta revelada: ${correct1} / ${correct2} (${currentVerb.spanish})`;
+    feedback.textContent = `💡 Respuestas: ${correct1} / ${correct2} / ${correct3}`;
     feedback.className = 'feedback show-answer';
     
     // Registrar como incorrecto
