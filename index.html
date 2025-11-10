@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aprende los Verbos Irregulares</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎓 Verbos Irregulares</h1>
+            <div class="stats">
+                <div class="stat-item">
+                    <span class="stat-value" id="correct-count">0</span>
+                    <span class="stat-label">✓</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="incorrect-count">0</span>
+                    <span class="stat-label">✗</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="streak-count">0</span>
+                    <span class="stat-label">🔥</span>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <div id="start-screen" class="screen active">
+                <h2>¡Bienvenida! 👋</h2>
+                <p>Elige cómo practicar:</p>
+                
+                <div class="config-section">
+                    <label for="verb-count">Número de verbos:</label>
+                    <select id="verb-count">
+                        <option value="10">10 verbos</option>
+                        <option value="20">20 verbos</option>
+                        <option value="30">30 verbos</option>
+                        <option value="50">50 verbos</option>
+                        <option value="all" selected>Todos (87 verbos)</option>
+                    </select>
+                    
+                    <label for="selection-mode">Selección:</label>
+                    <select id="selection-mode">
+                        <option value="random" selected>Aleatorio</option>
+                        <option value="sequential">Correlativo</option>
+                        <option value="review">Repaso (más fallados)</option>
+                    </select>
+                    
+                    <div id="start-position-group" style="display: none;">
+                        <label for="start-position">Empezar desde:</label>
+                        <input type="number" id="start-position" min="1" max="87" value="1">
+                    </div>
+                </div>
+                
+                <div class="mode-selection">
+                    <button class="mode-btn study-btn" onclick="showStudyMode()">
+                        📚 Modo Estudio - Ver Tabla
+                    </button>
+                    <button class="mode-btn stats-btn" onclick="showStatsMode()">
+                        📊 Ver Estadísticas
+                    </button>
+                    <button class="mode-btn" onclick="startGame('infinitive')">
+                        📝 Infinitivo → Pasado + Participio
+                    </button>
+                    <button class="mode-btn" onclick="startGame('past')">
+                        ⏮️ Pasado → Infinitivo + Participio
+                    </button>
+                    <button class="mode-btn" onclick="startGame('participle')">
+                        ✨ Participio → Infinitivo + Pasado
+                    </button>
+                    <button class="mode-btn" onclick="startGame('random')">
+                        🎲 Modo Aleatorio
+                    </button>
+                </div>
+            </div>
+
+            <div id="stats-screen" class="screen">
+                <h2>📊 Estadísticas de Progreso</h2>
+                <div class="stats-controls">
+                    <button class="btn btn-tertiary" onclick="clearAllStats()">🗑️ Borrar Estadísticas</button>
+                </div>
+                <div class="table-container">
+                    <table id="stats-table">
+                        <thead>
+                            <tr>
+                                <th>Verbo</th>
+                                <th>Intentos</th>
+                                <th>Correctas</th>
+                                <th>Falladas</th>
+                                <th>% Éxito</th>
+                            </tr>
+                        </thead>
+                        <tbody id="stats-table-body">
+                        </tbody>
+                    </table>
+                </div>
+                <button class="btn btn-back" onclick="backToStart()">← Volver</button>
+            </div>
+
+            <div id="study-screen" class="screen">
+                <h2>📚 Tabla de Verbos Irregulares</h2>
+                <div class="table-controls">
+                    <input type="text" id="search-box" placeholder="🔍 Buscar verbo..." onkeyup="filterTable()">
+                </div>
+                <div class="table-container">
+                    <table id="verbs-table">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Infinitivo</th>
+                                <th>Pasado</th>
+                                <th>Participio</th>
+                                <th>Español</th>
+                            </tr>
+                        </thead>
+                        <tbody id="verbs-table-body">
+                        </tbody>
+                    </table>
+                </div>
+                <button class="btn btn-back" onclick="backToStart()">← Volver</button>
+            </div>
+
+            <div id="game-screen" class="screen">
+                <div class="card">
+                    <div class="verb-prompt">
+                        <p id="prompt-text"></p>
+                        <h2 id="given-verb" class="given-verb"></h2>
+                    </div>
+
+                    <div class="input-section">
+                        <div class="input-group" id="input1-group">
+                            <label id="label1"></label>
+                            <input type="text" id="input1" autocomplete="off">
+                        </div>
+                        <div class="input-group" id="input2-group">
+                            <label id="label2"></label>
+                            <input type="text" id="input2" autocomplete="off">
+                        </div>
+                    </div>
+
+                    <div class="feedback" id="feedback"></div>
+
+                    <div class="button-group">
+                        <button id="check-btn" class="btn btn-primary" onclick="checkAnswer()">Comprobar</button>
+                        <button id="next-btn" class="btn btn-secondary" onclick="nextVerb()" style="display: none;">Siguiente</button>
+                        <button class="btn btn-tertiary" onclick="showAnswer()">Ver Respuesta</button>
+                    </div>
+
+                    <button class="btn-back" onclick="backToStart()">← Volver al inicio</button>
+                </div>
+            </div>
+
+            <div id="end-screen" class="screen">
+                <h2>¡Bien hecho! 🎉</h2>
+                <div class="final-stats">
+                    <p>Respuestas correctas: <span id="final-correct"></span></p>
+                    <p>Respuestas incorrectas: <span id="final-incorrect"></span></p>
+                    <p>Mejor racha: <span id="final-streak"></span></p>
+                </div>
+                <button class="btn btn-primary" onclick="backToStart()">Jugar de nuevo</button>
+            </div>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
