@@ -248,11 +248,19 @@ main {
     border: 2px solid #ddd;
     border-radius: 8px;
     transition: border-color 0.3s;
+    cursor: pointer;
+    background: white;
 }
 
 .input-group input:focus {
     outline: none;
     border-color: #667eea;
+    background: #f0f4ff;
+}
+
+.input-group input.active {
+    border-color: #667eea;
+    background: #f0f4ff;
 }
 
 .input-group input.correct {
@@ -263,6 +271,43 @@ main {
 .input-group input.incorrect {
     border-color: #f44336;
     background-color: #ffebee;
+}
+
+.virtual-keyboard {
+    margin-bottom: 15px;
+}
+
+.keyboard-letters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 10px;
+    justify-content: center;
+}
+
+.key-btn {
+    min-width: 40px;
+    height: 45px;
+    padding: 8px 12px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.1s;
+    text-transform: lowercase;
+}
+
+.key-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(102, 126, 234, 0.3);
+}
+
+.key-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(102, 126, 234, 0.3);
 }
 
 .feedback {
@@ -438,6 +483,17 @@ main {
     #verbs-table th,
     #verbs-table td {
         padding: 6px 4px;
+    }
+    
+    .key-btn {
+        min-width: 36px;
+        height: 42px;
+        padding: 6px 10px;
+        font-size: 1em;
+    }
+    
+    .keyboard-letters {
+        gap: 4px;
     }
 }
 
