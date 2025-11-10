@@ -201,115 +201,6 @@ const verbCountSelect = document.getElementById('verb-count');
 const selectionModeSelect = document.getElementById('selection-mode');
 const startPositionGroup = document.getElementById('start-position-group');
 const startPositionInput = document.getElementById('start-position');
-const keyboardLettersDiv = document.getElementById('keyboard-letters');
-
-// Control del input activo
-let activeInput = null;
-
-// Event listeners para cambiar el input activo
-input1.addEventListener('click', () => setActiveInput(input1));
-input2.addEventListener('click', () => setActiveInput(input2));
-input3.addEventListener('click', () => setActiveInput(input3));
-
-// Establecer input activo
-function setActiveInput(input) {
-    activeInput = input;
-    input1.classList.remove('active');
-    input2.classList.remove('active');
-    input3.classList.remove('active');
-    input.classList.add('active');
-}
-
-// Generar el teclado virtual con las letras necesarias
-function generateKeyboard() {
-    if (!currentVerb) return;
-    
-    // Obtener todas las letras únicas necesarias para las respuestas
-    const correct1 = input1.dataset.correct.toLowerCase();
-    const correct2 = input2.dataset.correct.toLowerCase();
-    const correct3 = input3.dataset.correct.toLowerCase();
-    
-    // Extraer letras únicas (ignorando espacios y caracteres especiales, pero incluyendo acentos)
-    const allText = (correct1 + correct2 + correct3).replace(/[^a-záéíóúñü]/g, '');
-    const uniqueLetters = [...new Set(allText.split(''))].sort();
-    
-    // Añadir algunas letras extra aleatorias para dificultar un poco
-    const extraLetters = ['a', 'e', 'i', 'o', 'u', 's', 'r', 'n', 't', 'l'];
-    const lettersToAdd = extraLetters.filter(l => !uniqueLetters.includes(l)).slice(0, 3);
-    const allLetters = [...uniqueLetters, ...lettersToAdd].sort();
-    
-    // Generar botones
-    keyboardLettersDiv.innerHTML = '';
-    allLetters.forEach(letter => {
-        const btn = document.createElement('button');
-        btn.className = 'key-btn';
-        btn.textContent = letter;
-        btn.onclick = () => addLetter(letter);
-        keyboardLettersDiv.appendChild(btn);
-    });
-    
-    // Añadir botón para slash (para variantes como was/were)
-    if (correct1.includes('/') || correct2.includes('/') || correct3.includes('/')) {
-        const slashBtn = document.createElement('button');
-        slashBtn.className = 'key-btn';
-        slashBtn.textContent = '/';
-        slashBtn.onclick = () => addLetter('/');
-        keyboardLettersDiv.appendChild(slashBtn);
-    }
-    
-    // Añadir botón para espacio
-    const spaceBtn = document.createElement('button');
-    spaceBtn.className = 'key-btn';
-    spaceBtn.textContent = '␣';
-    spaceBtn.title = 'Espacio';
-    spaceBtn.onclick = () => addLetter(' ');
-    keyboardLettersDiv.appendChild(spaceBtn);
-    
-    // Añadir botones de control (borrar y limpiar)
-    const deleteBtn = document.createElement('button');
-    deleteBtn.className = 'key-btn';
-    deleteBtn.textContent = '⌫';
-    deleteBtn.title = 'Borrar último carácter';
-    deleteBtn.onclick = deleteLastChar;
-    keyboardLettersDiv.appendChild(deleteBtn);
-    
-    const clearBtn = document.createElement('button');
-    clearBtn.className = 'key-btn';
-    clearBtn.textContent = '✕';
-    clearBtn.title = 'Limpiar campo';
-    clearBtn.onclick = clearCurrentInput;
-    keyboardLettersDiv.appendChild(clearBtn);
-}
-
-// Añadir letra al input activo
-function addLetter(letter) {
-    if (!activeInput) {
-        activeInput = input1;
-        setActiveInput(input1);
-    }
-    
-    activeInput.value += letter;
-}
-
-// Borrar último carácter
-function deleteLastChar() {
-    if (!activeInput) {
-        activeInput = input1;
-        setActiveInput(input1);
-    }
-    
-    activeInput.value = activeInput.value.slice(0, -1);
-}
-
-// Limpiar input actual
-function clearCurrentInput() {
-    if (!activeInput) {
-        activeInput = input1;
-        setActiveInput(input1);
-    }
-    
-    activeInput.value = '';
-}
 
 // Event listener para mostrar/ocultar posición inicial
 selectionModeSelect.addEventListener('change', function() {
@@ -317,6 +208,29 @@ selectionModeSelect.addEventListener('change', function() {
         startPositionGroup.style.display = 'block';
     } else {
         startPositionGroup.style.display = 'none';
+    }
+});
+
+// Event listeners para Enter en los inputs
+input1.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        input2.focus();
+    }
+});
+
+input2.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        input3.focus();
+    }
+});
+
+input3.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        if (checkBtn.style.display !== 'none') {
+            checkAnswer();
+        } else {
+            nextVerb();
+        }
     }
 });
 
@@ -433,15 +347,10 @@ function nextVerb() {
     feedback.textContent = '';
     feedback.className = 'feedback';
     
-    // Establecer primer input como activo
-    activeInput = input1;
-    setActiveInput(input1);
-    
-    // Generar teclado virtual
-    generateKeyboard();
-    
     checkBtn.style.display = 'inline-block';
     nextBtn.style.display = 'none';
+    
+    input1.focus();
 }
 
 // Configurar la pregunta según el modo
